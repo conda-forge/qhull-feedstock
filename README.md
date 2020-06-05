@@ -3,7 +3,7 @@ About qhull
 
 Home: http://www.qhull.org/
 
-Package license: Qhull(BSD-like) For details, see COPYING.txt
+Package license: Qhull
 
 Feedstock license: BSD 3-Clause
 
