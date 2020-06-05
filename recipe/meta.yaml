@@ -1,18 +1,18 @@
 {% set name = "qhull" %}
 {% set version = "2015.2" %}
-{% set year = version.split(".")[0] %}
-{% set minor = version.split(".")[1] %}
+{% set sha256 = "8b6dd67ff77ce1ee814da84f4134ef4bdce1f1031e570b8d83019ccef58b1c00"%}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: http://www.qhull.org/download/qhull-{{ year }}-src-7.{{ minor }}.0.tgz
-  sha256: 78b010925c3b577adc3d58278787d7df08f7c8fb02c3490e375eab91bb58a436
+  fn: {{ version }}.tar.gz
+  url: https://github.com/qhull/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1000
+  number: 1001
 
 requirements:
   build:
@@ -42,8 +42,7 @@ test:
 
 about:
   home: http://www.qhull.org/
-  license: Qhull(BSD-like) For details, see COPYING.txt
-  license_family: BSD
+  license: Qhull
   license_file: COPYING.txt
   summary: 'Qhull computes the convex hull'
   doc_url: http://www.qhull.org/html
