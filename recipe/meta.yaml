@@ -1,6 +1,6 @@
 {% set name = "qhull" %}
-{% set version = "2015.2" %}
-{% set sha256 = "8b6dd67ff77ce1ee814da84f4134ef4bdce1f1031e570b8d83019ccef58b1c00" %}
+{% set version = "2019.1" %}
+{% set sha256 = "cf7235b76244595a86b9407b906e3259502b744528318f2178155e5899d6cf9f" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1001
+  number: 0
 
 requirements:
   build:
