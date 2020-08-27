@@ -10,6 +10,8 @@ source:
   fn: {{ version }}.tar.gz
   url: https://github.com/qhull/{{ name }}/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - modified_output_path.patch  # [osx]
 
 build:
   number: 0
