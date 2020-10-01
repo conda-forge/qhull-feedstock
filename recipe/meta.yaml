@@ -21,6 +21,7 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - ninja
+    - make  # [unix]
   host:
   run:
 
