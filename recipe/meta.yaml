@@ -1,6 +1,6 @@
 {% set name = "qhull" %}
-{% set version = "2019.1" %}
-{% set sha256 = "cf7235b76244595a86b9407b906e3259502b744528318f2178155e5899d6cf9f" %}
+{% set version = "2020.2" %}
+{% set sha256 = "59356b229b768e6e2b09a701448bfa222c37b797a84f87f864f97462d8dbc7c5" %}
 
 package:
   name: {{ name|lower }}
