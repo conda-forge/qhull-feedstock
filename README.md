@@ -5,11 +5,13 @@ Home: http://www.qhull.org/
 
 Package license: Qhull
 
-Feedstock license: BSD-3-Clause
+Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/qhull-feedstock/blob/master/LICENSE.txt)
 
 Summary: Qhull computes the convex hull
 
+Development: https://github.com/qhull/qhull
 
+Documentation: http://www.qhull.org/html
 
 Current build status
 ====================
