@@ -1,0 +1,58 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f50b187..f39e30a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -369,15 +369,10 @@ set_target_properties(${qhull_SHAREDR} PROPERTIES
+ 
+ if(UNIX)
+     target_link_libraries(${qhull_SHAREDR} m)
+-    if(APPLE)
+-        set_target_properties(${qhull_SHAREDR} PROPERTIES 
+-            INSTALL_NAME_DIR "${LIB_INSTALL_DIR}")
+-    else()
+-        set_target_properties(${qhull_SHAREDR} PROPERTIES 
+-            INSTALL_RPATH "${LIB_INSTALL_DIR}"
+-            INSTALL_RPATH_USE_LINK_PATH TRUE
+-            BUILD_WITH_INSTALL_RPATH FALSE)
+-    endif()
++    set_target_properties(${qhull_SHAREDR} PROPERTIES 
++	    INSTALL_RPATH "${LIB_INSTALL_DIR}"
++	    INSTALL_RPATH_USE_LINK_PATH TRUE
++	    BUILD_WITH_INSTALL_RPATH FALSE)
+ endif(UNIX)
+ 
+ # ---------------------------------------
+@@ -396,15 +391,10 @@ set_target_properties(${qhull_SHARED} PROPERTIES
+ 
+ if(UNIX)
+     target_link_libraries(${qhull_SHARED} m)
+-    if(APPLE)
+-        set_target_properties(${qhull_SHARED} PROPERTIES 
+-            INSTALL_NAME_DIR "${LIB_INSTALL_DIR}")
+-    else()
+-        set_target_properties(${qhull_SHARED} PROPERTIES 
++    set_target_properties(${qhull_SHARED} PROPERTIES 
+             INSTALL_RPATH "${LIB_INSTALL_DIR}"
+             INSTALL_RPATH_USE_LINK_PATH TRUE
+             BUILD_WITH_INSTALL_RPATH FALSE)
+-    endif()
+ endif(UNIX)
+ 
+ # ---------------------------------------
+@@ -424,15 +414,10 @@ set_target_properties(${qhull_SHAREDP} PROPERTIES
+ 
+ if(UNIX)
+     target_link_libraries(${qhull_SHAREDP} m)
+-    if(APPLE)
+-        set_target_properties(${qhull_SHAREDP} PROPERTIES 
+-            INSTALL_NAME_DIR "${LIB_INSTALL_DIR}")
+-    else()
+-        set_target_properties(${qhull_SHAREDP} PROPERTIES 
++    set_target_properties(${qhull_SHAREDP} PROPERTIES 
+             INSTALL_RPATH "${LIB_INSTALL_DIR}"
+             INSTALL_RPATH_USE_LINK_PATH TRUE
+             BUILD_WITH_INSTALL_RPATH FALSE)
+-    endif()
+ endif(UNIX)
+ 
+ # ---------------------------------------
