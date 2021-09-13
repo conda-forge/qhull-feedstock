@@ -1,0 +1,32 @@
+diff --git a/src/libqhull_r/qhull_r-exports.def b/src/libqhull_r/qhull_r-exports.def
+index 4c5e17c..415f7a9 100644
+--- a/src/libqhull_r/qhull_r-exports.def
++++ b/src/libqhull_r/qhull_r-exports.def
+@@ -1,9 +1,9 @@
+ ; qhull_r-exports.def -- MSVC module-definition file
+ ;
+ ;   Generated from depends.exe by cut-and-paste of exported symbols by mingw gcc
+-;   [jan'14] 391 symbols 
++;   [jan'14] 391 symbols
+ ;
+-;   Referenced by CMakeLists/add_library, libqhull_r.pro/DEF_FILE, 
++;   Referenced by CMakeLists/add_library, libqhull_r.pro/DEF_FILE,
+ ;   and libqhull_r.vcxproj/Linker/Input/Module Definition File
+ ;
+ ;   If qh_NOmerge, use qhull_r-nomerge-exports.def
+@@ -183,6 +183,7 @@ qh_maxouter
+ qh_maxsimplex
+ qh_maydropneighbor
+ qh_memalloc
++qh_memcheck
+ qh_memfree
+ qh_memfreeshort
+ qh_meminit
+@@ -351,6 +352,7 @@ qh_setdelnth
+ qh_setdelnthsorted
+ qh_setdelsorted
+ qh_setduplicate
++qh_setendpointer
+ qh_setequal
+ qh_setequal_except
+ qh_setequal_skip
