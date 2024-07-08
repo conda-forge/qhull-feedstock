@@ -209,4 +209,5 @@ Feedstock Maintainers
 =====================
 
 * [@sirokujira](https://github.com/sirokujira/)
+* [@xhochy](https://github.com/xhochy/)
 
