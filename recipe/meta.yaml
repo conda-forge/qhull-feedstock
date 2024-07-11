@@ -43,8 +43,9 @@ test:
 outputs:
   - name: qhull
   - name: qhull-static
-    script: build_static.sh    # [not win]
-    script: bld_static.bat     # [win]
+    build:
+      skip: true  # [win]
+    script: build_static.sh
     requirements:
       build:
         - {{ stdlib('c') }}
@@ -60,8 +61,7 @@ outputs:
         # Static libs existence
         {% set qhull_libs = ["qhullcpp", "qhullstatic", "qhullstatic_r"] %}
         {% for each_qhull_lib in qhull_libs %}
-        - test ! -f $PREFIX/lib/lib{{ each_qhull_lib }}.a                         # [unix]
-        - if not exist %PREFIX%\\Library\\lib\\{{ each_qhull_lib }}.lib exit 1    # [win]
+        - test ! -f $PREFIX/lib/lib{{ each_qhull_lib }}.a
         {% endfor %}
 
 about:
