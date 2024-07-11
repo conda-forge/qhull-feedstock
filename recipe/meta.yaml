@@ -46,7 +46,7 @@ outputs:
         {% endfor %}
   - name: qhull-static
     script: build_static.sh    # [not win]
-    script: build_static.bat    # [win]
+    script: bld_static.bat     # [win]
     requirements:
       build:
         - {{ stdlib('c') }}
