@@ -13,7 +13,7 @@ source:
     - windows.patch
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('qhull', max_pin='x.x') }}
 
