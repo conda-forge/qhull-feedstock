@@ -29,6 +29,11 @@ requirements:
 
 test:
   commands:
+    # Check non-existence of static libs
+    {% set qhull_libs = ["qhullcpp", "qhullstatic", "qhullstatic_r"] %}
+    {% for each_qhull_lib in qhull_libs %}
+    - test ! -f $PREFIX/lib/lib{{ each_qhull_lib }}.a                         # [unix]
+    {% endfor %}
     # Shared libs existence
     {% set qhull_dynlibs = ["qhull_r"] %}
     {% for each_qhull_lib in qhull_dynlibs %}
