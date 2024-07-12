@@ -13,7 +13,7 @@ source:
     - windows.patch
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('qhull', max_pin='x.x') }}
 
@@ -50,6 +50,10 @@ outputs:
   - name: qhull-static
     build:
       skip: true  # [win]
+      always_include_files:
+        # Must overwrite the CMake metadata from shared libprotobuf
+        - lib/cmake/Qhull/           # [unix]
+        - Library/lib/cmake/Qhull/   # [win]
     script: build_static.sh
     requirements:
       build:
@@ -66,7 +70,7 @@ outputs:
         # Static libs existence
         {% set qhull_libs = ["qhullcpp", "qhullstatic", "qhullstatic_r"] %}
         {% for each_qhull_lib in qhull_libs %}
-        - test ! -f $PREFIX/lib/lib{{ each_qhull_lib }}.a
+        - test -f $PREFIX/lib/lib{{ each_qhull_lib }}.a
         {% endfor %}
 
 about:
