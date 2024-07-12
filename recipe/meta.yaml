@@ -50,6 +50,10 @@ outputs:
   - name: qhull-static
     build:
       skip: true  # [win]
+      always_include_files:
+        # Must overwrite the CMake metadata from shared libprotobuf
+        - lib/cmake/Qhull/           # [unix]
+        - Library/lib/cmake/Qhull/   # [win]
     script: build_static.sh
     requirements:
       build:
