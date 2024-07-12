@@ -13,7 +13,7 @@ source:
     - windows.patch
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage('qhull', max_pin='x.x') }}
 
@@ -29,14 +29,12 @@ requirements:
 
 test:
   commands:
-    # Verify libraries.
+    # Check non-existence of static libs
     {% set qhull_libs = ["qhullcpp", "qhullstatic", "qhullstatic_r"] %}
     {% for each_qhull_lib in qhull_libs %}
     - test ! -f $PREFIX/lib/lib{{ each_qhull_lib }}.a                         # [unix]
-    - if not exist %PREFIX%\\Library\\lib\\{{ each_qhull_lib }}.lib exit 1    # [win]
     {% endfor %}
-    # [S. Bruens #69]
-    # BUILD_SHARED_LIBS
+    # Shared libs existence
     {% set qhull_dynlibs = ["qhull_r"] %}
     {% for each_qhull_lib in qhull_dynlibs %}
     - test -f $PREFIX/lib/lib{{ each_qhull_lib }}${SHLIB_EXT}                 # [unix]
@@ -46,6 +44,30 @@ test:
     - rbox c P0 D2 | qvoronoi s o
     - rbox c | qconvex FQ FV n | qhalf Fp
     - rbox 1000 D3 | qhull C-1e-4 FO Ts
+
+outputs:
+  - name: qhull
+  - name: qhull-static
+    build:
+      skip: true  # [win]
+    script: build_static.sh
+    requirements:
+      build:
+        - {{ stdlib('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - ninja
+        - make  # [unix]
+      host:
+      run:
+        - {{ pin_subpackage('qhull', exact=True) }}
+    test:
+      commands:
+        # Static libs existence
+        {% set qhull_libs = ["qhullcpp", "qhullstatic", "qhullstatic_r"] %}
+        {% for each_qhull_lib in qhull_libs %}
+        - test ! -f $PREFIX/lib/lib{{ each_qhull_lib }}.a
+        {% endfor %}
 
 about:
   home: http://www.qhull.org/

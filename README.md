@@ -93,6 +93,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-qhull-green.svg)](https://anaconda.org/conda-forge/qhull) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/qhull.svg)](https://anaconda.org/conda-forge/qhull) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/qhull.svg)](https://anaconda.org/conda-forge/qhull) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/qhull.svg)](https://anaconda.org/conda-forge/qhull) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-qhull--static-green.svg)](https://anaconda.org/conda-forge/qhull-static) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/qhull-static.svg)](https://anaconda.org/conda-forge/qhull-static) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/qhull-static.svg)](https://anaconda.org/conda-forge/qhull-static) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/qhull-static.svg)](https://anaconda.org/conda-forge/qhull-static) |
 
 Installing qhull
 ================
@@ -104,16 +105,16 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `qhull` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `qhull, qhull-static` can be installed with `conda`:
 
 ```
-conda install qhull
+conda install qhull qhull-static
 ```
 
 or with `mamba`:
 
 ```
-mamba install qhull
+mamba install qhull qhull-static
 ```
 
 It is possible to list all of the versions of `qhull` available on your platform with `conda`:
