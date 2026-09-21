@@ -5,6 +5,8 @@ channel_sources:
 channel_targets:
 - conda-forge main
 cxx_compiler:
-- vs2019
+- vs2022
+qhull:
+- '2020.2'
 target_platform:
 - win-64
