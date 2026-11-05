@@ -3,7 +3,7 @@
 
 package:
   name: {{ name|lower }}
-  version: {{ version }}
+  version: "{{ version }}"
 
 source:
   url: https://github.com/qhull/{{ name }}/archive/{{ version }}.tar.gz
@@ -13,7 +13,7 @@ source:
     - windows.patch
 
 build:
-  number: 5
+  number: 6
   run_exports:
     - {{ pin_subpackage('qhull', max_pin='x.x') }}
 

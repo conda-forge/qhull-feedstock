@@ -3,43 +3,78 @@
 :: changes to this script, consider a proposal to conda-smithy so that other feedstocks can also
 :: benefit from the improvement.
 
-:: Note: we assume a Miniforge installation is available
-
 :: INPUTS (required environment variables)
 :: CONFIG: name of the .ci_support/*.yaml file for this job
 :: CI: azure, github_actions, or unset
+:: MINIFORGE_HOME: where to install the base conda environment
 :: UPLOAD_PACKAGES: true or false
 :: UPLOAD_ON_BRANCH: true or false
 
 setlocal enableextensions enabledelayedexpansion
 
+FOR %%A IN ("%~dp0.") DO SET "REPO_ROOT=%%~dpA"
+if "%MINIFORGE_HOME%"=="" set "MINIFORGE_HOME=%USERPROFILE%\Miniforge3"
+:: Remove trailing backslash, if present
+if "%MINIFORGE_HOME:~-1%"=="\" set "MINIFORGE_HOME=%MINIFORGE_HOME:~0,-1%"
+
+set FEEDSTOCK_ROOT=%cd%
+set RECIPE_ROOT=%FEEDSTOCK_ROOT%\recipe
+set CI_SUPPORT=%FEEDSTOCK_ROOT%\.ci_support
+set CONFIG_FILE=%CI_SUPPORT%\%CONFIG%.yaml
+
+set "arch=64"
+if "%PROCESSOR_ARCHITECTURE%"=="ARM64" set "arch=arm64"
+
+call :start_group "Provisioning base env with micromamba"
+
+set "MAMBA_ROOT_PREFIX=%MINIFORGE_HOME%-micromamba-%RANDOM%"
+set "MICROMAMBA_VERSION=2.9.0-0"
+set "MICROMAMBA_URL=https://github.com/mamba-org/micromamba-releases/releases/download/%MICROMAMBA_VERSION%/micromamba-win-%arch%"
+set "MICROMAMBA_TMPDIR=%TMP%\micromamba-%RANDOM%"
+set "MICROMAMBA_EXE=%MICROMAMBA_TMPDIR%\micromamba.exe"
+
+echo Downloading micromamba %MICROMAMBA_VERSION%
+if not exist "%MICROMAMBA_TMPDIR%" mkdir "%MICROMAMBA_TMPDIR%"
+powershell -ExecutionPolicy Bypass -Command "(New-Object Net.WebClient).DownloadFile('%MICROMAMBA_URL%', '%MICROMAMBA_EXE%')"
+if !errorlevel! neq 0 exit /b !errorlevel!
+
+echo Creating environment
+call "%MICROMAMBA_EXE%" create --yes --root-prefix "%MAMBA_ROOT_PREFIX%" --prefix "%MINIFORGE_HOME%" ^
+    --channel conda-forge ^
+    pip python=3.14 conda-build conda-forge-ci-setup=4 "conda-build>=26.3"
+if !errorlevel! neq 0 exit /b !errorlevel!
+
+echo Cleaning up micromamba
+del /S /Q "%MAMBA_ROOT_PREFIX%" >nul
+del /S /Q "%MICROMAMBA_TMPDIR%" >nul
+
+call :end_group
+
 call :start_group "Configuring conda"
 
 :: Activate the base conda environment
-call activate base
+echo Activating environment
+set "CONDA_EXE=%MINIFORGE_HOME%\Scripts\conda.exe"
+call "%MINIFORGE_HOME%\condabin\conda.bat" activate "%MINIFORGE_HOME%"
 :: Configure the solver
 set "CONDA_SOLVER=libmamba"
 if !errorlevel! neq 0 exit /b !errorlevel!
 set "CONDA_LIBMAMBA_SOLVER_NO_CHANNELS_FROM_INSTALLED=1"
 
-:: Provision the necessary dependencies to build the recipe later
-echo Installing dependencies
-mamba.exe install "python=3.10" pip mamba conda-build conda-forge-ci-setup=4 "conda-build>=24.1" -c conda-forge --strict-channel-priority --yes
-if !errorlevel! neq 0 exit /b !errorlevel!
-
 :: Set basic configuration
 echo Setting up configuration
-setup_conda_rc .\ ".\recipe" .\.ci_support\%CONFIG%.yaml
-if !errorlevel! neq 0 exit /b !errorlevel!
-echo Running build setup
+setup_conda_rc "%FEEDSTOCK_ROOT%" "%RECIPE_ROOT%" "%CONFIG_FILE%"
+if !errorlevel! neq 0 exit /b !errorlevel!echo Running build setup
 CALL run_conda_forge_build_setup
 
 
 if !errorlevel! neq 0 exit /b !errorlevel!
 
-if EXIST LICENSE.txt (
+call :end_group
+
+if EXIST %FEEDSTOCK_ROOT%\LICENSE.txt (
     echo Copying feedstock license
-    copy LICENSE.txt "recipe\\recipe-scripts-license.txt"
+    copy "%FEEDSTOCK_ROOT%\\LICENSE.txt" "%RECIPE_ROOT%\\recipe-scripts-license.txt"
 )
 if NOT [%HOST_PLATFORM%] == [%BUILD_PLATFORM%] (
     if [%CROSSCOMPILING_EMULATOR%] == [] (
@@ -48,25 +83,31 @@ if NOT [%HOST_PLATFORM%] == [%BUILD_PLATFORM%] (
 )
 
 if NOT [%flow_run_id%] == [] (
-    set "EXTRA_CB_OPTIONS=%EXTRA_CB_OPTIONS% --extra-meta flow_run_id=%flow_run_id% remote_url=%remote_url% sha=%sha%"
+        set "EXTRA_CB_OPTIONS=%EXTRA_CB_OPTIONS% --extra-meta flow_run_id=%flow_run_id% remote_url=%remote_url% sha=%sha%"
 )
-
-call :end_group
 
 :: Build the recipe
 echo Building recipe
-conda-build.exe "recipe" -m .ci_support\%CONFIG%.yaml --suppress-variables %EXTRA_CB_OPTIONS%
+
+conda-build.exe ^
+    "%RECIPE_ROOT%" ^
+    -m %CONFIG_FILE% ^
+    %EXTRA_CB_OPTIONS% ^
+    --suppress-variables
+
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 call :start_group "Inspecting artifacts"
-:: inspect_artifacts was only added in conda-forge-ci-setup 4.6.0
-WHERE inspect_artifacts >nul 2>nul && inspect_artifacts || echo "inspect_artifacts needs conda-forge-ci-setup >=4.6.0"
+
+:: inspect_artifacts was only added in conda-forge-ci-setup 4.9.4
+WHERE inspect_artifacts >nul 2>nul && inspect_artifacts --recipe-dir "%RECIPE_ROOT%" -m %CONFIG_FILE% || echo "inspect_artifacts needs conda-forge-ci-setup >=4.9.4"
+
 call :end_group
 
 :: Prepare some environment variables for the upload step
 if /i "%CI%" == "github_actions" (
     set "FEEDSTOCK_NAME=%GITHUB_REPOSITORY:*/=%"
-    set "GIT_BRANCH=%GITHUB_REF:refs/heads/=%"
+    set "GIT_BRANCH=%GITHUB_REF_NAME%"
     if /i "%GITHUB_EVENT_NAME%" == "pull_request" (
         set "IS_PR_BUILD=True"
     ) else (
@@ -84,8 +125,6 @@ if /i "%CI%" == "azure" (
     )
     set "TEMP=%UPLOAD_TEMP%"
 )
-
-:: Validate
 call :start_group "Validating outputs"
 validate_recipe_outputs "%FEEDSTOCK_NAME%"
 if !errorlevel! neq 0 exit /b !errorlevel!
@@ -96,7 +135,7 @@ if /i "%UPLOAD_PACKAGES%" == "true" (
         call :start_group "Uploading packages"
         if not exist "%TEMP%\" md "%TEMP%"
         set "TMP=%TEMP%"
-        upload_package --validate --feedstock-name="%FEEDSTOCK_NAME%" .\ ".\recipe" .ci_support\%CONFIG%.yaml
+        upload_package --validate --feedstock-name="%FEEDSTOCK_NAME%" "%FEEDSTOCK_ROOT%" "%RECIPE_ROOT%" "%CONFIG_FILE%"
         if !errorlevel! neq 0 exit /b !errorlevel!
         call :end_group
     )
